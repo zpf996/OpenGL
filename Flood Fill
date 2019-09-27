@@ -1,0 +1,110 @@
+// 区域填充 漫水法
+//online.zpf666.www
+//github:https://github.com/zpf996/OpenGL
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<Windows.h>
+#include<gl/glut.h> 
+#include<algorithm>
+#include<iostream>
+#include<string>
+#include<iostream>
+#define max 100
+typedef struct stack {
+	int x;
+	int y;
+	int color;//像素颜色
+	int top;  //栈顶指针
+};
+
+int push(stack *T,int x0,int y0,int color)         //入栈
+{
+	if (T->top == max-1)
+	{
+		return 0;
+	}
+	else
+	{
+		T->x = x0;
+		T->y = y0;
+		T->color = color;
+	}
+	return 1;
+}
+int pop(stack *T)          //出栈
+{
+	if (T->top == -1)  //判断是否为空
+	{
+		return 0;
+	}
+	else              //不为空则出栈
+	{
+		T->top--;
+	}
+}
+void FloodFill(int x0, int y0, int newcolor,int boundaryColor)      //漫水法
+{
+	int xx, yy;
+	stack *T;
+	newcolor = 120;
+	int oldcolor;
+	HDC hdc = CreateDC("DISPLAY", NULL, NULL, NULL);
+	oldcolor = GetPixel(hdc, x0, y0);
+	push(T, x0, y0,oldcolor);
+	while (T->top != -1)
+	{
+		oldcolor = T->color;
+		xx = T->x;
+		yy = T->y;
+		pop(T);
+		if (oldcolor != newcolor && oldcolor != boundaryColor)
+		{
+			glVertex2f(xx, yy);
+			push(T, xx - 1, yy, GetPixel(hdc, xx - 1, yy));
+			push(T, xx , yy+1, GetPixel(hdc, xx , yy+1));
+			push(T, xx + 1, yy, GetPixel(hdc, xx + 1, yy));
+			push(T, xx , yy-1, GetPixel(hdc, xx , yy-1));
+		}
+	}
+}
+void Init()
+{
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glShadeModel(GL_FLAT);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0.0, 200.0, 0.0, 150.0);
+}
+void mydisplay()
+{
+	glClear(GL_COLOR_BUFFER_BIT);//设置窗口背景设置为当前清空颜色
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glPointSize(2);
+	glBegin(GLU_POINT);
+	glVertex3f(10.0f, 100.0f, 0.0f); 
+	glVertex3f(50.0f, 50.0f, 0.0f);
+	glVertex3f(60.0f, 100.0f, 0.0f);
+	glEnd();
+
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glPointSize(2);
+	glBegin(GL_POINTS);
+
+	FloodFill(50, 50, 120, 150);
+
+	glEnd();
+	glFlush();                          //保证前面的OpenGL命令立即执行，而不是在缓冲池中
+}
+int main(int argc, char *argv[]) {
+	glutInit(&argc, argv);     //对GLUT初始化
+	glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);  //设置显示方式
+	glutInitWindowPosition(10, 10);  //设置窗口在屏幕中的位置
+	glutInitWindowSize(400, 400);      //设置窗口的大小
+	glutCreateWindow("BresenhamLine");    //设置窗口的标题
+	Init();
+	glutDisplayFunc(&mydisplay);       //设置一个函数，需要画图时被调用
+	glutMainLoop();                    //消息循环，显示窗口
+	return 0;
+}
+
