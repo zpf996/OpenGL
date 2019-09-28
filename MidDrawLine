@@ -1,0 +1,82 @@
+//MidDrawLine.cpp: 定义控制台应用程序的入口点。
+//online.zpf666.www
+//GitHub：www.github/zpf996/OpenGL
+#include<stdio.h>
+#include<stdlib.h>
+#include<gl/glut.h> 
+int x0 = 0, y0 = 0, x1 = 0, y1 = 0;
+int MidDrawLine(int x0, int y0, int x1, int y1) {
+	int y = y0, x = x0;
+	int b = x1 - x0;
+	int a = y0 - y1;
+	int d0 = a + 0.5*b;   //初始值
+	int d = d0;
+	glVertex2i(x, y);
+	while (y != y1 && x != x1)
+
+	{
+
+		if (d < 0)
+
+		{
+			d = d + a + b;
+
+			x++;
+
+			glVertex2i(x, y);
+
+		}
+
+		else
+
+		{
+
+			d = d + a;
+			x++;
+
+			y++;
+
+			glVertex2i(x, y);
+
+		}
+
+	}
+	return 0;
+}
+void Init()
+{
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glShadeModel(GL_FLAT);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0.0, 200.0, 0.0, 150.0);
+}
+void mydisplay()
+{
+	glClear(GL_COLOR_BUFFER_BIT);//设置窗口背景设置为当前清空颜色
+	glColor3f(1.0f, 0.0f, 0.0f);
+
+	printf("请输入起始点坐标和终点坐标");
+	scanf_s("%d%d%d%d", &x0, &y0, &x1, &y1);
+
+	glPointSize(2);
+	glBegin(GL_POINTS);
+
+	MidDrawLine(x0, y0, x1, y1);
+	
+	
+	glEnd();
+	glFlush();                          //保证前面的OpenGL命令立即执行，而不是在缓冲池中
+}
+int main(int argc, char *argv[]) {
+	glutInit(&argc, argv);     //对GLUT初始化
+	glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);  //设置显示方式
+	glutInitWindowPosition(10, 10);  //设置窗口在屏幕中的位置
+	glutInitWindowSize(400, 400);      //设置窗口的大小
+	glutCreateWindow("MidDrawLine");    //设置窗口的标题
+	Init();
+	glutDisplayFunc(&mydisplay);       //设置一个函数，需要画图时被调用
+	glutMainLoop();                    //消息循环，显示窗口
+	return 0;
+}
+
