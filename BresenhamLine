@@ -10,6 +10,7 @@ int DrawLineBresenham(int x0,int y0,int x1,int y1) {
 	int yy = y1 - y0;
 	int d1 = 2*yy-xx;    //起始值
 	int d = d1;
+	glVertex2i(x,y);
 	while (y !=y1 && x != x1)
 	{
 		if (d < 0)
