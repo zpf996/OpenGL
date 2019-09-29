@@ -10,17 +10,17 @@
 #include<iostream>
 #include<string>
 #include<iostream>
-#define max 100
+#define Max 20
 typedef struct stack {
 	int x;
 	int y;
-	int color;//像素颜色
+	COLORREF color;//像素颜色
 	int top;  //栈顶指针
 };
-
+COLORREF newcolor; COLORREF boundaryColor;
 int push(stack *T,int x0,int y0,int color)         //入栈
 {
-	if (T->top == max-1)
+	if (T->top == Max-1)
 	{
 		return 0;
 	}
@@ -43,23 +43,24 @@ int pop(stack *T)          //出栈
 		T->top--;
 	}
 }
-void FloodFill(int x0, int y0, int newcolor,int boundaryColor)      //漫水法
+void FloodFill(int x0, int y0, COLORREF newcolor, COLORREF boundaryColor)      //漫水法
 {
 	int xx, yy;
-	stack *T;
-	newcolor = 120;
-	int oldcolor;
-	HDC hdc = CreateDC("DISPLAY", NULL, NULL, NULL);
+	stack *T = (stack*)malloc(sizeof(stack));
+	T->top = 0;
+	newcolor = 220;
+	COLORREF oldcolor;
+	HDC hdc = CreateDC(("mydisplay"), NULL, NULL, NULL);
 	oldcolor = GetPixel(hdc, x0, y0);
 	push(T, x0, y0,oldcolor);
 	while (T->top != -1)
 	{
 		oldcolor = T->color;
-		xx = T->x;
-		yy = T->y;
 		pop(T);
 		if (oldcolor != newcolor && oldcolor != boundaryColor)
 		{
+			xx = T->x;
+			yy = T->y;
 			glVertex2f(xx, yy);
 			push(T, xx - 1, yy, GetPixel(hdc, xx - 1, yy));
 			push(T, xx , yy+1, GetPixel(hdc, xx , yy+1));
@@ -78,20 +79,21 @@ void Init()
 }
 void mydisplay()
 {
+	COLORREF newcolor; COLORREF boundaryColor;
 	glClear(GL_COLOR_BUFFER_BIT);//设置窗口背景设置为当前清空颜色
-	glColor3f(1.0f, 1.0f, 0.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glPointSize(2);
-	glBegin(GLU_POINT);
-	glVertex3f(10.0f, 100.0f, 0.0f); 
-	glVertex3f(50.0f, 50.0f, 0.0f);
-	glVertex3f(60.0f, 100.0f, 0.0f);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(50.0f,100.0f); 
+	glVertex2f(80.0f,50.0f);
+	glVertex2f(0.0f,50.0f);
 	glEnd();
 
-	glColor3f(1.0f, 0.0f, 0.0f);
+	glColor3f(0.0f, 1.0f, 0.0f);
 	glPointSize(2);
 	glBegin(GL_POINTS);
 
-	FloodFill(50, 50, 120, 150);
+	FloodFill(50, 50, oldcolor, boundaryColor);
 
 	glEnd();
 	glFlush();                          //保证前面的OpenGL命令立即执行，而不是在缓冲池中
