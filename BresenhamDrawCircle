@@ -1,0 +1,117 @@
+// BresenhamLine.cpp: 定义控制台应用程序的入口点。
+//
+//online.zpf666.www
+
+#include<stdio.h>
+
+#include<stdlib.h>
+
+#include<gl/glut.h> 
+
+int x=0,y=0, x0 = 0, y0 = 0;
+double r = 0;
+int DrawCircleBresenham(int x0, int y0, double r) {
+	
+	int y = r, x = 0;
+	//int d0 =2*(x+1)*(x+1)+y*y+(y-1)*(y - 1)-2*r*r;//起始值
+	int d0 = 3 - 2*r;
+	int d = d0;
+	Drawcircle(x, y, x0, y0);
+	while (x<y)
+	{
+		Drawcircle(x, y , x0, y0);
+		if (d < 0)
+		{
+			d = d + 4 * x + 6;
+			x++;
+		}
+		else
+		{
+			d = d + 4 * (x - y) + 10;
+			x++;
+			y--;
+		}
+		if (x == y)
+		{
+			Drawcircle(x, y, x0, y0);
+		}
+	}
+	return 0;
+
+}
+
+int Drawcircle(int x,int y,int x0,int y0) {
+	glVertex2i(x0, y0);
+	glVertex2i(x0 + x, y0+y);
+	glVertex2i(x0 + y, y0+x);
+	glVertex2i(x0 + y, y0-x);
+	glVertex2i(x0 + x, y0-y);
+	glVertex2i(x0 - x, y0-y);
+	glVertex2i(x0 - y, y0-x);
+	glVertex2i(x0 - y, y0+x);
+	glVertex2i(x0 - x, y0+y);
+	return 0;
+}
+void Init()
+
+{
+
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+
+	glShadeModel(GL_FLAT);
+
+	glMatrixMode(GL_PROJECTION);
+
+	glLoadIdentity();
+
+	gluOrtho2D(0.0, 200.0, 0.0, 150.0);
+
+}
+
+void mydisplay()
+
+{
+
+	glClear(GL_COLOR_BUFFER_BIT);//设置窗口背景设置为当前清空颜色
+
+	glColor3f(1.0f, 0.0f, 0.0f);
+
+
+	printf("请输入圆心坐标和半径\n");
+
+	scanf_s("%d%d%lf", &x0, &y0, &r);
+
+
+	glPointSize(2);
+
+	glBegin(GL_POINTS);
+
+	DrawCircleBresenham(x0,y0,r);
+
+	glEnd();
+
+	glFlush();                          //保证前面的OpenGL命令立即执行，而不是在缓冲池中
+
+}
+
+int main(int argc, char *argv[]) {
+
+	glutInit(&argc, argv);     //对GLUT初始化
+
+	glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);  //设置显示方式
+
+	glutInitWindowPosition(10, 10);  //设置窗口在屏幕中的位置
+
+	glutInitWindowSize(500, 500);      //设置窗口的大小
+
+	glutCreateWindow("DrawCircleBresenham");    //设置窗口的标题
+
+	Init();
+
+	glutDisplayFunc(&mydisplay);       //设置一个函数，需要画图时被调用
+
+	glutMainLoop();                    //消息循环，显示窗口
+
+	return 0;
+
+}
