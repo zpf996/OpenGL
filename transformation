@@ -1,0 +1,90 @@
+//实验要求 把一个三角形对于一条k=1的直线进行反射变换->平移->旋转->反射变换—>	平移->旋转->
+
+
+//基本复合变换
+//online.zpf666.www
+
+#include<stdio.h>
+
+#include<stdlib.h>
+#include<math.h>
+#include<gl/glut.h> 
+
+//基本复合变换
+//平移->旋转->反射变换
+//平移 < -旋转 < -
+
+//定义复核矩阵
+int TF()
+{
+	float sj[3][3] = {{50,250,0},{100,250,0},{125,300,0}};  //三角矩阵
+	float line[3][3] = { 0,0,0,400,400,0,0,0,0 };           //直线矩阵
+	float xz[3][3] = { cos(45) ,-sin(45),0,sin(45),cos(45),0,0,0,1 };  //旋转矩阵
+	float py[3][3] = { 1,0,-50,0,1,-250};  //平移矩阵
+	float fs[3][3] = {1,0,0,0,-1,0,0,0,1};   //关于x轴的反射矩阵
+}
+void Init()
+
+{
+
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+
+	glShadeModel(GL_FLAT);
+
+	glMatrixMode(GL_PROJECTION);
+
+	glLoadIdentity();
+
+	gluOrtho2D(0.0, 400.0, 0.0, 400.0);
+
+}
+
+void mydisplay()
+
+{
+	glClear(GL_COLOR_BUFFER_BIT);//设置窗口背景设置为当前清空颜色
+
+	glColor3f(1.0f, 0.0f, 0.0f);
+
+	glPointSize(2);
+
+	glBegin(GL_TRIANGLES);
+	//绘制三角形
+	glVertex2i(50,250);
+	glVertex2i(100,250);
+	glVertex2i(125,300);
+	glEnd();
+	glBegin(GL_LINES);
+	//绘制直线
+	glVertex2i(0,0);
+	glVertex2i(400,400);
+	glEnd();
+	//进行基本复合变换
+	glBegin(GL_TRIANGLES);
+
+	glEnd();
+	glFlush();                          //保证前面的OpenGL命令立即执行，而不是在缓冲池中
+
+}
+
+int main(int argc, char *argv[]) {
+
+	glutInit(&argc, argv);     //对GLUT初始化
+
+	glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);  //设置显示方式
+
+	glutInitWindowPosition(10, 10);  //设置窗口在屏幕中的位置
+
+	glutInitWindowSize(500, 500);      //设置窗口的大小
+
+	glutCreateWindow("transformation");    //设置窗口的标题
+
+	Init();
+
+	glutDisplayFunc(&mydisplay);       //设置一个函数，需要画图时被调用
+
+	glutMainLoop();                    //消息循环，显示窗口
+
+	return 0;
+
+}
