@@ -1,5 +1,3 @@
-//实验要求 把一个三角形对于一条k=1的直线进行反射变换->平移->旋转->反射变换—>	平移->旋转->
-
 
 //基本复合变换
 //online.zpf666.www
@@ -10,6 +8,8 @@
 #include<math.h>
 #include<gl/glut.h> 
 
+typedef float JZ[3][3];
+JZ TTF;//复合矩阵
 //基本复合变换
 //平移->旋转->反射变换
 //平移 < -旋转 < -
@@ -22,6 +22,52 @@ int TF()
 	float xz[3][3] = { cos(45) ,-sin(45),0,sin(45),cos(45),0,0,0,1 };  //旋转矩阵
 	float py[3][3] = { 1,0,-50,0,1,-250};  //平移矩阵
 	float fs[3][3] = {1,0,0,0,-1,0,0,0,1};   //关于x轴的反射矩阵
+
+	return 0;
+}
+//创建3X3矩阵
+void creatJZ(JZ J1) {
+	int i, j;
+	for (i = 0; i < 3; i++)
+		for (j = 0; j < 3; j++)
+			J1[i][j] = (i == j);
+}
+//将矩阵1与矩阵2相乘并存于矩阵2
+void PreMultiply(JZ z1,JZ z2)
+{
+	int i, j;
+	JZ Temp;
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
+			Temp[i][j] = z1[i][0] * z2[0][j] + z1[i][1] * z2[1][j] + z1[i][2] * z2[2][j];
+		}
+	}
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
+			z2[i][j] = Temp[i][j];
+		}
+	}
+
+}
+//平移变换，平移量x,y
+void PY(float x,float y) {
+	JZ T;
+	creatJZ(T);
+	//初始化为单位矩阵
+	T[0][2] = x;
+	T[1][2] = y;
+	PreMultiply(T, TTF);  //与符合矩阵相乘
+}
+//旋转变换，中心点为x,y,角度为@
+void XZ() {
+	JZ T;
+	creatJZ(T);
+	//初始化为单位矩阵
+
 }
 void Init()
 
@@ -56,8 +102,8 @@ void mydisplay()
 	glEnd();
 	glBegin(GL_LINES);
 	//绘制直线
-	glVertex2i(0,0);
-	glVertex2i(400,400);
+	glVertex2i(50,50);
+	glVertex2i(200,200);
 	glEnd();
 	//进行基本复合变换
 	glBegin(GL_TRIANGLES);
