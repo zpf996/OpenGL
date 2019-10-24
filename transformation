@@ -1,4 +1,3 @@
-
 //基本复合变换
 //online.zpf666.www
 
@@ -8,23 +7,19 @@
 #include<math.h>
 #include<gl/glut.h> 
 
+#define pi 3.1415926
 typedef float JZ[3][3];
-JZ TTF;//复合矩阵
-//基本复合变换
-//平移->旋转->反射变换
-//平移 < -旋转 < -
-
-//定义复核矩阵
-int TF()
+class wcPt2D
 {
-	float sj[3][3] = {{50,250,0},{100,250,0},{125,300,0}};  //三角矩阵
-	float line[3][3] = { 0,0,0,400,400,0,0,0,0 };           //直线矩阵
-	float xz[3][3] = { cos(45) ,-sin(45),0,sin(45),cos(45),0,0,0,1 };  //旋转矩阵
-	float py[3][3] = { 1,0,-50,0,1,-250};  //平移矩阵
-	float fs[3][3] = {1,0,0,0,-1,0,0,0,1};   //关于x轴的反射矩阵
+public:
+	GLfloat x, y;
+};
 
-	return 0;
-}
+JZ TTF;//复合矩阵
+	   //基本复合变换
+	   //平移->旋转->反射变换
+	   //平移 < -旋转 < -
+
 //创建3X3矩阵
 void creatJZ(JZ J1) {
 	int i, j;
@@ -33,7 +28,7 @@ void creatJZ(JZ J1) {
 			J1[i][j] = (i == j);
 }
 //将矩阵1与矩阵2相乘并存于矩阵2
-void PreMultiply(JZ z1,JZ z2)
+void PreMultiply(JZ z1, JZ z2)
 {
 	int i, j;
 	JZ Temp;
@@ -54,7 +49,7 @@ void PreMultiply(JZ z1,JZ z2)
 
 }
 //平移变换，平移量x,y
-void PY(float x,float y) {
+void PY(float x, float y) {
 	JZ T;
 	creatJZ(T);
 	//初始化为单位矩阵
@@ -63,12 +58,48 @@ void PY(float x,float y) {
 	PreMultiply(T, TTF);  //与符合矩阵相乘
 }
 //旋转变换，中心点为x,y,角度为@
-void XZ() {
+void XZ(GLfloat theta) {
 	JZ T;
 	creatJZ(T);
 	//初始化为单位矩阵
+	T[0][0] = cos(theta);
+	T[0][1] = -sin(theta);
+	
+	T[1][0] = sin(theta);
+	T[1][1] = cos(theta);
 
+	PreMultiply(T, TTF);
 }
+void DC() {
+	JZ T;
+	creatJZ(T);
+	T[1][1] = -1;
+	PreMultiply(T, TTF);
+}
+void transformVerts2D(GLint nVerts, wcPt2D * verts)
+{
+	GLint k;
+	GLfloat temp;
+	for (k = 0; k < nVerts; k++)
+	{
+		temp = TTF[0][0] * verts[k].x + TTF[0][1] * verts[k].y + TTF[0][2];
+		verts[k].y = TTF[1][0] * verts[k].x + TTF[1][1] * verts[k].y + TTF[1][2];
+		verts[k].x = temp;
+	}
+}
+void triangle(wcPt2D * verts)
+{
+	GLint k;
+	glBegin(GL_TRIANGLES);
+	for (k = 0; k < 3; k++)
+		glVertex2f(verts[k].x, verts[k].y);
+	glEnd();
+	glBegin(GL_LINE_LOOP);
+	for (k = 3; k < 5; k++)
+		glVertex2f(verts[k].x, verts[k].y);
+	glEnd();
+}
+
 void Init()
 
 {
@@ -88,27 +119,54 @@ void Init()
 void mydisplay()
 
 {
+	GLint nVerts = 3;
+	wcPt2D verts[3] = { { 50.0,250.0 },{ 100.0,250.0 },{ 125.0,300.0 }};
+
+	wcPt2D centroidPt;
+
+	GLint k, xSum = 0, ySum = 0;
+	for (k = 0; k < nVerts; k++)
+	{
+		xSum += verts[k].x;
+		ySum += verts[k].y;
+	}
+	centroidPt.x = GLfloat(xSum) / GLfloat(nVerts);
+	centroidPt.y = GLfloat(ySum) / GLfloat(nVerts);
+
+	wcPt2D pivPt, fixedPt;
+	pivPt = centroidPt;
+	fixedPt = centroidPt;
+
+	GLfloat tx = 0.0, ty = 120.0;
+	GLdouble theta = pi / 4.0;
+
 	glClear(GL_COLOR_BUFFER_BIT);//设置窗口背景设置为当前清空颜色
 
 	glColor3f(1.0f, 0.0f, 0.0f);
 
 	glPointSize(2);
 
-	glBegin(GL_TRIANGLES);
+	
 	//绘制三角形
-	glVertex2i(50,250);
-	glVertex2i(100,250);
-	glVertex2i(125,300);
-	glEnd();
+	triangle(verts);
+	//变为单位矩阵
+	creatJZ(TTF); 
 	glBegin(GL_LINES);
 	//绘制直线
-	glVertex2i(50,50);
-	glVertex2i(200,200);
+	glVertex2i(0, 0);
+	glVertex2i(600, 600);
 	glEnd();
-	//进行基本复合变换
-	glBegin(GL_TRIANGLES);
+	PY(-verts[3].x, -verts[3].y);
+	XZ(-theta);
+	DC();
+	XZ(theta);
+	PY(verts[3].x, verts[3].y);
+	transformVerts2D(nVerts, verts);
 
-	glEnd();
+	glColor3f(1.0, 0.0, 0.0);
+	triangle(verts);
+	
+
 	glFlush();                          //保证前面的OpenGL命令立即执行，而不是在缓冲池中
 
 }
