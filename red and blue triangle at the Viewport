@@ -1,0 +1,76 @@
+
+//红蓝三角形
+//online.zpf666.www
+
+#include<stdio.h>
+
+#include<stdlib.h>
+#include<math.h>
+#include<gl/glut.h> 
+typedef GLfloat point2d[2];
+
+void triangle(point2d a,point2d b,point2d c) {
+	glBegin(GL_TRIANGLES);
+	glVertex2fv(a);
+	glVertex2fv(b);
+	glVertex2fv(c);
+	glEnd();
+}
+void Init()
+
+{
+	glMatrixMode(GL_PROJECTION);
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+
+	gluOrtho2D(-2.0, 2.0, -2.0, 2.0);
+	glShadeModel(GL_FLAT);
+
+	glMatrixMode(GL_MODELVIEW);
+
+	glLoadIdentity();
+
+	
+
+}
+
+void mydisplay()
+
+{
+	point2d v[3] = { {-1.0,-0.58},{1.0,-0.58},{0.0,1.15} };
+	glClear(GL_COLOR_BUFFER_BIT);//设置窗口背景设置为当前清空颜色
+
+	glColor3f(0.0, 0.0, 1.0);
+	glLoadIdentity();
+	glPointSize(2);
+	glViewport(0, 0, 300, 400);  //视区1
+	triangle(v[0],v[1],v[2]);
+	glColor3f(1.0,0.0,0.0);
+	glViewport(300,0,300,400);//视区2
+	glRotated(90.0,0.0,0.0,1.0);
+	triangle(v[0], v[1], v[2]);
+
+	glFlush();                          //保证前面的OpenGL命令立即执行，而不是在缓冲池中
+
+}
+
+int main(int argc, char *argv[]) {
+
+	glutInit(&argc, argv);     //对GLUT初始化
+
+	glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);  //设置显示方式
+
+	glutInitWindowPosition(10, 10);  //设置窗口在屏幕中的位置
+
+	glutInitWindowSize(600, 400);      //设置窗口的大小
+
+	glutCreateWindow("RED and BLUE triangle");    //设置窗口的标题
+
+	Init();
+
+	glutDisplayFunc(&mydisplay);       //设置一个函数，需要画图时被调用
+
+	glutMainLoop();                    //消息循环，显示窗口
+
+	return 0;
+
+}
