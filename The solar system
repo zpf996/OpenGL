@@ -1,6 +1,6 @@
 #include<gl/glut.h>
 #include<stdlib.h>
-static int year = 0, day = 0;
+static int year = 0, day = 0,day2=0;
 void init(void)
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -12,23 +12,105 @@ void display(void)
 	glColor3f(1.0, 1.0, 1.0);
 	glPushMatrix();
 	glutWireSphere(1.0, 20, 16);   //绘制太阳
+	glRotatef((GLfloat)year, 0.0, 1.0, 0.0);//绕向量(0.0,1.0,0.0)旋转角度(第一个参数)
+	//绘制水星，无卫星
+	glTranslatef(1.0, 0.0, 0.0);  //平移
+	glRotatef((GLfloat)day, 0.0, 1.0, 0.0);  
+	glutWireSphere(0.1, 10, 8); 
+
+	glPopMatrix();
+	glPushMatrix();
 	glRotatef((GLfloat)year, 0.0, 1.0, 0.0);
-	glTranslatef(2.0, 0.0, 0.0);
+
+	//绘制金星，无卫星
+	glTranslatef(1.5, 0.0, 0.0);  //平移
 	glRotatef((GLfloat)day, 0.0, 1.0, 0.0);
-	glutWireSphere(0.2, 10, 8); //绘制行星
-	glutWireSphere(0.2, 10, 8); //绘制行星
+	glutWireSphere(0.1, 10, 8);
+
+	glPopMatrix();
+	glPushMatrix();
+	glRotatef((GLfloat)year, 0.0, 1.0, 0.0);
+
+	//绘制地球，卫星月球
+	glTranslatef(2.0, 0.0, 0.0);  //平移
+	glRotatef((GLfloat)day, 0.0, 1.0, 0.0);
+	glutWireSphere(0.1, 10, 8);
+
+	//绘制月球
+	glTranslatef(0.2, 0.0, 0.0);//平移
+	glRotatef((GLfloat)day2, 0.0, 1.0, 0.0);
+	glutWireSphere(0.05, 10, 8);
+
+	glPopMatrix();
+	glPushMatrix();
+	glRotatef((GLfloat)year, 0.0, 1.0, 0.0);
+
+	//绘制火星，二颗，福波斯，德莫斯
+	glTranslatef(2.5, 0.0, 0.0);  //平移
+	glRotatef((GLfloat)day, 0.0, 1.0, 0.0);
+	glutWireSphere(0.1, 10, 8);
+
+	//绘制福波斯
+	glTranslatef(0.2, 0.0, 0.0);//平移
+	glRotatef((GLfloat)day2, 0.0, 1.0, 0.0);
+	glutWireSphere(0.05, 10, 8);
+	//绘制德莫斯
+	glTranslatef(0.1, 0.0, 0.0);//平移
+	glRotatef((GLfloat)day2, 0.0, 1.0, 0.0);
+	glutWireSphere(0.05, 10, 8);
+
+	glPopMatrix();
+	glPushMatrix();
+	glRotatef((GLfloat)year, 0.0, 1.0, 0.0);
+
+	//绘制木星，63颗卫星
+	glTranslatef(4, 0.0, 0.0);  //平移
+	glRotatef((GLfloat)day, 0.0, 1.0, 0.0);
+	glutWireSphere(0.5, 10, 8);
+	glPopMatrix();
+	glPushMatrix();
+	glRotatef((GLfloat)year, 0.0, 1.0, 0.0);
+
+	//绘制土星，目前发现30颗卫星，绘制最大的卫星泰坦
+	glTranslatef(6, 0.0, 0.0);  //平移
+	glRotatef((GLfloat)day, 0.0, 1.0, 0.0);
+	glutWireSphere(0.4, 10, 8);
+
+	//绘制泰坦
+	glTranslatef(0.5, 0.0, 0.0);//平移
+	glRotatef((GLfloat)day2, 0.0, 1.0, 0.0);
+	glutWireSphere(0.15, 10, 8);
+
+	glPopMatrix();
+	glPushMatrix();
+	glRotatef((GLfloat)year, 0.0, 1.0, 0.0);
+
+	//绘制天王星，27颗卫星
+	glTranslatef(8, 0.0, 0.0);  //平移
+	glRotatef((GLfloat)day, 0.0, 1.0, 0.0);
+	glutWireSphere(0.45, 10, 8);
+
+	glPopMatrix();
+	glPushMatrix();
+	glRotatef((GLfloat)year, 0.0, 1.0, 0.0);
+
+	//绘制海王星，13颗卫星
+	glTranslatef(10, 0.0, 0.0);  //平移
+	glRotatef((GLfloat)day, 0.0, 1.0, 0.0);
+	glutWireSphere(0.45, 10, 8);
+
 	glPopMatrix();
 	glutSwapBuffers();
 }
 void reshape(int w, int h)
 {
-	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
-	glMatrixMode(GL_PROJECTION);
+	glViewport(0, 0, (GLsizei)w, (GLsizei)h);//在窗口中定义一个像素矩形，最终的图像将映射到这个矩形中
+	glMatrixMode(GL_PROJECTION);//设置当前矩阵模式:对投影矩阵应用随后的矩阵操作
+	glLoadIdentity();//重置当前指定的矩阵为单位矩阵.隔离各个模型变换的效果，防止连续变换产生的累积效果
+	gluPerspective(60.0, (GLfloat)w / (GLfloat)h, 1.0, 20.0);//创建一个表示对称透视视图平截头体的矩阵，并把它与当前矩阵相乘
+	glMatrixMode(GL_MODELVIEW);//对模型视景矩阵堆栈应用随后的矩阵操作
 	glLoadIdentity();
-	gluPerspective(60.0, (GLfloat)w / (GLfloat)h, 1.0, 20.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	gluLookAt(0.0, 5.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);//定义一条视线
 }
 void keyboard(unsigned char key, int x, int y)
 {
@@ -47,6 +129,14 @@ void keyboard(unsigned char key, int x, int y)
 		break;
 	case'Y':
 		year = (year - 5) % 360;
+		glutPostRedisplay();
+		break;
+	case 'p':
+		day2 = (day2 + 5) % 360;
+		glutPostRedisplay();
+		break;
+	case 'P':
+		day2 = (day2 - 5) % 360;
 		glutPostRedisplay();
 		break;
 	case 27:
