@@ -1,3 +1,8 @@
+//1、把bezier曲线转换为B样条曲线
+//2、beizier曲线
+//3、拼接bezier曲线
+
+
 #include<gl/glut.h>
 #include<stdlib.h>
 #include<iostream>
@@ -8,13 +13,13 @@ struct Point
 	int x, y;
 
 };
-Point pt[4], bz[11];
+Point pt[4], bz[11];    //pt为控制点数，bz为曲线上的点数
 vector <Point> vpt;
 int nInput;
 bool bDraw;
 void CalcBZPoints()
 {
-	float a0, a1, a2,a3, b0, b1, b2, b3;
+	float a0, a1, a2,a3, b0, b1, b2, b3; 
 	a0 = pt[0].x;
 	a1 = -3 * pt[0].x + 3 * pt[1].x;
 	a2 = 3 * pt[0].x - 6 * pt[1].x + 3 * pt[2].x;
